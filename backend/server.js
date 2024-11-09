@@ -46,3 +46,41 @@ app.post('/signup', (req, res) => {
 app.listen(3000, () => {
   console.log('Server running on port 3000');
 });
+app.put('/updateUser', (req, res) => {
+  const { email, password, newEmail, newPassword } = req.body;
+  const query = 'UPDATE users SET email = ?, password = ? WHERE email = ? AND password = ?';
+  db.query(query, [newEmail, newPassword, email, password], (err, results) => {
+    if (err) {
+      res.status(500).send('Error updating user');
+    } else if (results.affectedRows > 0) {
+      res.status(200).send('User updated successfully');
+    } else {
+      res.status(404).send('User not found');
+    }
+  });
+});
+
+app.delete('/deleteUser', (req, res) => {
+  const { email, password } = req.body;
+  const query = 'DELETE FROM users WHERE email = ? AND password = ?';
+  db.query(query, [email, password], (err, results) => {
+    if (err) {
+      res.status(500).send('Error deleting user');
+    } else if (results.affectedRows > 0) {
+      res.status(200).send('User deleted successfully');
+    } else {
+      res.status(404).send('User not found');
+    }
+  });
+});
+
+app.get('/users', (req, res) => {
+  const query = 'SELECT * FROM users';
+  db.query(query, (err, results) => {
+    if (err) {
+      res.status(500).send('Error fetching users');
+    } else {
+      res.status(200).json(results);
+    }
+  });
+});
